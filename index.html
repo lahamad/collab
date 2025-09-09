@@ -10,7 +10,7 @@
 <style>
 /* ---------- THEME & LAYOUT ---------- */
 :root{
-  --bg-0:#030305; --bg-1:#08080c; --panel:#0f0f16; --muted:#bfc1c8;
+  --bg-0:#020204; --bg-1:#07070a; --panel:#0f0f16; --muted:#bfc1c8;
   --accent1:#ff6b6b; --accent2:#7c5cff; --glass:rgba(255,255,255,.04);
   --success:#16a34a; --danger:#ef4444;
 }
@@ -19,8 +19,8 @@ html,body{height:100%}
 body{
   margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#eef2f7;
   background:
-    radial-gradient(800px 420px at 10% 10%, rgba(124,92,255,.06), transparent 20%),
-    linear-gradient(180deg,var(--bg-0), #06060a 60%);
+    radial-gradient(900px 420px at 10% 10%, rgba(124,92,255,.06), transparent 20%),
+    linear-gradient(180deg,var(--bg-0), #06060a 68%);
   -webkit-font-smoothing:antialiased;
 }
 
@@ -38,7 +38,7 @@ body{
 /* ICONS */
 .icons{display:flex;gap:8px;align-items:center}
 .icon-btn{background:#0c0c12;border:1px solid rgba(255,255,255,.04);padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
-.count{background:var(--accent1);color:#fff;padding:2px 6px;border-radius:999px;margin-left:6px;font-weight:700; font-size:13px}
+.count{background:var(--accent1);color:#fff;padding:2px 6px;border-radius:999px;margin-left:6px;font-weight:700;font-size:13px}
 
 /* TOOLBAR */
 .toolbar{max-width:1280px;margin:14px auto;display:flex;justify-content:space-between;gap:12px;padding:0 12px;align-items:center}
@@ -167,7 +167,7 @@ input,select,textarea{padding:8px;background:#0e0e14;border:1px solid rgba(255,2
       <option value="compact">Compact</option>
     </select>
   </label>
-  <p class="muted">GLAOUR demo. Connect a backend to convert this into a real store (products, auth, payments).</p>
+  <p class="muted">GLAOUR demo. Replace images with your catalog for production and wire backend for orders.</p>
   <div style="margin-top:14px"><button id="closeSettings" class="btn">Close</button></div>
 </aside>
 
@@ -228,7 +228,7 @@ input,select,textarea{padding:8px;background:#0e0e14;border:1px solid rgba(255,2
       <div class="logo" style="width:36px;height:36px;border-radius:8px">G</div>
       <div style="font-weight:700">GLAOUR</div>
     </div>
-    <div style="flex:1" class="muted">Real-business ready UI. Images are demo thumbnails from Unsplash. Replace with your catalog for production.</div>
+    <div style="flex:1" class="muted">Real-business ready UI. Images are demo thumbnails from Unsplash (query-based). Replace with your catalog for production.</div>
   </div>
 </footer>
 
@@ -236,33 +236,50 @@ input,select,textarea{padding:8px;background:#0e0e14;border:1px solid rgba(255,2
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
 <script>
-/* ========== APP.JS — All logic in-page ========== */
+/* ================= APP.JS — Single-file implementation ================= */
 
-/* ---------- Demo data generation (1200+) ---------- */
+/* ---------- Generate 1,200+ unique product image URLs ----------
+   Approach:
+   - Use a set of Unsplash search queries (men-fashion, mens-jacket, kurta, tuxedo, streetwear, suit)
+   - For each product i, pick a query cyclically and generate a unique "sig" query parameter
+   - URL: https://source.unsplash.com/1400x900/?<queries>&sig=<i>
+   This yields a wide variety of different images for each item.
+   For production replace with your own image host or CMS.
+*/
+
 const PRODUCTS = [];
 const categories = ['Formal','Casual','Ethnic','Street','Active'];
 const sizes = ['XS','S','M','L','XL'];
-const sampleImages = [
-  'https://images.unsplash.com/photo-1520975912778-1fbf8a7b29b3',
-  'https://images.unsplash.com/photo-1503342217505-b0a15cf47945',
-  'https://images.unsplash.com/photo-1545996124-1b7b6b1f0f09',
-  'https://images.unsplash.com/photo-1490111718993-d98654ce6cf7',
-  'https://images.unsplash.com/photo-1541099649105-f69ad21f3246',
-  'https://images.unsplash.com/photo-1600180758895-8f3e8bd2b6c4'
+const queries = [
+  'men-fashion','mens-jacket','mens-coat','mens-suit','mens-casual','mens-traditional',
+  'ethnic-menswear','mens-streetwear','mens-tracksuit','mens-denim','mens-formal','mens-tuxedo',
+  'kurta','sherwani','bomber-jacket','leather-jacket','blazer','tailored-suit','linen-shirt'
 ];
-function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
-function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
-for(let i=1;i<=1200;i++){
-  const cat = pick(categories);
+
+function rand(a,b){ return Math.floor(Math.random()*(b-a+1))+a }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)] }
+
+// create 1200 products
+const TOTAL = 1200;
+for(let i=1;i<=TOTAL;i++){
+  const category = pick(categories);
   const size = pick(sizes);
   const base = rand(499,14999);
-  const deal = Math.random() < 0.45 ? rand(5,40) : 0;
-  const img = pick(sampleImages) + `?q=80&w=1400&auto=format&fit=crop&sig=${i}`;
+  const deal = Math.random() < 0.5 ? rand(5,45) : 0;
+  const q = queries[i % queries.length];
+  // source.unsplash with query + sig param for uniqueness
+  const img = `https://source.unsplash.com/1400x900/?${encodeURIComponent(q)},men-fashion&sig=${i}`;
+  const name = `${['Heritage','Neo','Classic','Urban','Prime','Apex'][i % 6]} ${['Jacket','Kurta','Tuxedo','Tee','Tracksuit','Denim'][i % 6]} ${i}`;
   PRODUCTS.push({
     id: `gla-${i}`,
-    name: `${pick(['Heritage','Neo','Classic','Urban','Prime','Apex'])} ${pick(['Jacket','Kurta','Tuxedo','Tee','Tracksuit','Denim'])}`,
-    category: cat, size, priceINR: base, priceUSD: Math.round(base/82), priceEUR: Math.round(base/88),
-    deal, img, caption: 'Clean tailored design with premium fabric.'
+    name,
+    category, size,
+    priceINR: base,
+    priceUSD: Math.round(base/82),
+    priceEUR: Math.round(base/88),
+    deal,
+    img,
+    caption: 'Neat tailored design with premium fabric.'
   });
 }
 
@@ -272,9 +289,9 @@ const fmt = (n, cur='INR') => {
   return new Intl.NumberFormat(cur==='INR' ? 'en-IN' : 'en-US', opts).format(n);
 };
 let currency = 'INR';
-function getPrice(p){ if(currency==='USD') return p.priceUSD; if(currency==='EUR') return p.priceEUR; return p.priceINR; }
+function priceOf(p){ if(currency==='USD') return p.priceUSD; if(currency==='EUR') return p.priceEUR; return p.priceINR; }
 
-/* ---------- DOM refs ---------- */
+/* ---------- DOM references ---------- */
 const grid = document.getElementById('grid');
 const priceRange = document.getElementById('priceRange');
 const priceLabel = document.getElementById('priceLabel');
@@ -287,14 +304,15 @@ const chips = document.querySelectorAll('.chip');
 const cartCountEl = document.getElementById('cartCount');
 
 /* ---------- Render helpers ---------- */
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function cardHTML(p){
-  const price = getPrice(p);
+  const price = priceOf(p);
   const oldPrice = Math.round(price / (1 - (p.deal||0)/100));
   return `
     <article class="card" data-id="${p.id}" data-cat="${p.category}" data-size="${p.size}" data-tags="${p.deal? 'deal':''}">
       <div class="media" data-tilt>
-        <img src="${p.img}" alt="${p.name}" loading="lazy" />
-        <div class="badge">${p.category}</div>
+        <img src="${p.img}" alt="${escapeHtml(p.name)}" loading="lazy" />
+        <div class="badge">${escapeHtml(p.category)}</div>
         ${p.deal? `<div class="offer">${p.deal}% OFF</div>` : ''}
       </div>
       <div class="content">
@@ -309,13 +327,13 @@ function cardHTML(p){
     </article>
   `;
 }
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* ---------- Incremental render (lazy load) ---------- */
+/* ---------- Progressive render (initial small page + infinite scroll) ---------- */
+let activeList = PRODUCTS.slice();
 let page = 0, PAGE = 60;
 function renderNext(list){
-  const start = page*PAGE;
-  const slice = list.slice(start, start+PAGE);
+  const start = page * PAGE;
+  const slice = list.slice(start, start + PAGE);
   if(!slice.length) return;
   const tmp = document.createElement('div');
   tmp.innerHTML = slice.map(cardHTML).join('');
@@ -329,18 +347,16 @@ function clearAndRender(list){
   page = 0;
   renderNext(list);
 }
-
-/* ---------- Initial list (default PRODUCTS) ---------- */
-let activeList = PRODUCTS.slice(); // filtered subset
+/* initial render */
 clearAndRender(activeList);
 
 /* infinite scroll */
-let loadingMore = false;
+let loading = false;
 window.addEventListener('scroll', () => {
-  if(loadingMore) return;
-  if(window.innerHeight + window.scrollY > document.body.offsetHeight - 1400 && page * PAGE < activeList.length){
-    loadingMore = true;
-    setTimeout(()=>{ renderNext(activeList); loadingMore = false; }, 350);
+  if(loading) return;
+  if(window.innerHeight + window.scrollY > document.body.offsetHeight - 1200 && page * PAGE < activeList.length){
+    loading = true;
+    setTimeout(()=>{ renderNext(activeList); loading = false; }, 300);
   }
 });
 
@@ -356,14 +372,26 @@ function applyFilters(){
   const max = +priceRange.value;
   const text = searchInput.value.trim().toLowerCase();
   const chipsActive = [...document.querySelectorAll('.chip[aria-pressed="true"]')].map(c=>c.dataset.chip);
-  let list = PRODUCTS.filter(p => getPrice(p) <= convertPrice(max));
+  let list = PRODUCTS.filter(p => priceOf(p) <= convertPrice(max));
   if(cat) list = list.filter(p => p.category === cat);
   if(size) list = list.filter(p => p.size === size);
   if(onlyDeals.checked) list = list.filter(p => p.deal && p.deal > 0);
-  if(chipsActive.length) list = list.filter(p => chipsActive.every(ch => (p.deal && ch==='new') || (ch === 'bestseller' ? p.priceINR % 7 === 0 : true) )); // simple tag emulation
+  if(chipsActive.length) {
+    // simple emulation: "new" => recent ids, "bestseller" => price % 7 === 0, etc.
+    list = list.filter(p => {
+      return chipsActive.every(ch => {
+        if(ch === 'new') return Number(p.id.split('-')[1]) > TOTAL - 200; // newest 200
+        if(ch === 'bestseller') return p.priceINR % 7 === 0;
+        if(ch === 'festive') return p.category === 'Ethnic';
+        if(ch === 'minimal') return p.priceINR < 3000;
+        if(ch === 'premium') return p.priceINR > 8000;
+        return true;
+      });
+    });
+  }
   if(text) list = list.filter(p => (p.name + ' ' + p.caption).toLowerCase().includes(text));
-  if(sortBy.value === 'low') list.sort((a,b)=>getPrice(a)-getPrice(b));
-  if(sortBy.value === 'high') list.sort((a,b)=>getPrice(b)-getPrice(a));
+  if(sortBy.value === 'low') list.sort((a,b)=>priceOf(a)-priceOf(b));
+  if(sortBy.value === 'high') list.sort((a,b)=>priceOf(b)-priceOf(a));
   if(sortBy.value === 'new') list = list.slice().reverse();
   activeList = list;
   clearAndRender(activeList);
@@ -371,15 +399,18 @@ function applyFilters(){
 priceRange.addEventListener('input', ()=>{ priceLabel.textContent = '₹' + (+priceRange.value).toLocaleString('en-IN'); applyFilters(); });
 [filterCategory, filterSize, sortBy, onlyDeals].forEach(el => el.addEventListener('change', applyFilters));
 searchInput.addEventListener('input', ()=>{ setTimeout(applyFilters, 120); });
-chips.forEach(ch => ch.addEventListener('click', () => { const pressed = ch.getAttribute('aria-pressed') === 'true'; ch.setAttribute('aria-pressed', !pressed); applyFilters(); }));
+chips.forEach(ch => ch.addEventListener('click', () => { const press = ch.getAttribute('aria-pressed') === 'true'; ch.setAttribute('aria-pressed', !press); applyFilters(); }));
 
 /* ---------- Card tilt & hover motion ---------- */
 function attachCardTilt(){
   document.querySelectorAll('[data-tilt]').forEach(el => {
     const img = el.querySelector('img');
     function mm(e){
-      const r = el.getBoundingClientRect(); const x = (e.clientX - r.left)/r.width; const y = (e.clientY - r.top)/r.height;
-      const rx = (y - .5) * -8; const ry = (x - .5) * 12;
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width;
+      const y = (e.clientY - r.top) / r.height;
+      const rx = (y - 0.5) * -8;
+      const ry = (x - 0.5) * 12;
       el.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
       el.style.transition = 'transform .05s linear';
       img.style.transform = `translateZ(60px) scale(1.06)`;
@@ -392,14 +423,14 @@ function attachCardTilt(){
 
 /* ---------- Cart (localStorage) ---------- */
 const CART_KEY = 'glaour_cart_v1';
-function loadCart(){ return JSON.parse(localStorage.getItem(CART_KEY) || '{}'); }
+function getCart(){ return JSON.parse(localStorage.getItem(CART_KEY) || '{}'); }
 function saveCart(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); updateCartUI(); }
-function addToCart(id){ const c = loadCart(); c[id] = (c[id]||0) + 1; saveCart(c); }
-function removeFromCart(id){ const c = loadCart(); delete c[id]; saveCart(c); }
-function updateCartUI(){ const c = loadCart(); const total = Object.values(c).reduce((s,n)=>s+n,0); cartCountEl.textContent = total; }
+function addToCart(id){ const c = getCart(); c[id] = (c[id]||0) + 1; saveCart(c); }
+function removeFromCart(id){ const c = getCart(); delete c[id]; saveCart(c); }
+function updateCartUI(){ const c = getCart(); const count = Object.values(c).reduce((s,n)=>s+n,0); cartCountEl.textContent = count; }
 updateCartUI();
 
-/* ---------- Attach button handlers for cards ---------- */
+/* ---------- Attach card button handlers ---------- */
 function attachCardButtons(){
   document.querySelectorAll('.add-cart').forEach(btn => {
     btn.onclick = (e) => {
@@ -418,24 +449,24 @@ function attachCardButtons(){
   });
 }
 
-/* ---------- Cart modal rendering ---------- */
+/* ---------- Cart modal ---------- */
 const cartModal = document.getElementById('cartModal');
 document.getElementById('openCart').addEventListener('click', ()=>{ renderCart(); cartModal.classList.add('open'); cartModal.setAttribute('aria-hidden','false'); });
 document.getElementById('closeCart').addEventListener('click', ()=>{ cartModal.classList.remove('open'); cartModal.setAttribute('aria-hidden','true'); });
 function renderCart(){
   const body = document.getElementById('cartBody');
-  const c = loadCart();
+  const c = getCart();
   if(!Object.keys(c).length){ body.innerHTML = '<p class="muted">Your cart is empty.</p>'; return; }
   let html = '<div style="display:grid;gap:10px">';
   let total = 0;
   for(const id of Object.keys(c)){
     const qty = c[id];
     const p = PRODUCTS.find(x => x.id === id);
-    const price = getPrice(p);
-    total += price * qty;
+    const pr = priceOf(p);
+    total += pr * qty;
     html += `<div style="display:flex;gap:10px;align-items:center">
-      <img src="${p.img}" style="width:64px;height:64px;object-fit:cover;border-radius:8px" alt="${p.name}" />
-      <div style="flex:1"><strong>${escapeHtml(p.name)}</strong><div class="muted">${fmt(price,currency)} × ${qty}</div></div>
+      <img src="${p.img}" style="width:64px;height:64px;object-fit:cover;border-radius:8px" alt="${escapeHtml(p.name)}" />
+      <div style="flex:1"><strong>${escapeHtml(p.name)}</strong><div class="muted">${fmt(pr,currency)} × ${qty}</div></div>
       <div><button class="btn remove" data-id="${id}">Remove</button></div>
     </div>`;
   }
@@ -443,7 +474,7 @@ function renderCart(){
   body.innerHTML = html;
   body.querySelectorAll('.remove').forEach(b => b.addEventListener('click', e => { removeFromCart(e.target.dataset.id); renderCart(); }));
 }
-document.getElementById('checkoutBtn').addEventListener('click', ()=>{ alert('Checkout placeholder — integrate payment & backend to complete orders.'); });
+document.getElementById('checkoutBtn').addEventListener('click', ()=>{ alert('Checkout placeholder — integrate backend and payment gateway to complete orders.'); });
 
 /* ---------- Contact modal ---------- */
 const contactModal = document.getElementById('contactModal');
@@ -452,7 +483,7 @@ document.getElementById('closeContact').addEventListener('click', ()=>{ contactM
 document.getElementById('cancelContact').addEventListener('click', ()=>{ contactModal.classList.remove('open'); });
 document.getElementById('contactForm').addEventListener('submit', (e)=>{ e.preventDefault(); alert('Thanks! Message received (demo).'); contactModal.classList.remove('open'); });
 
-/* ---------- Settings drawer controls ---------- */
+/* ---------- Settings drawer ---------- */
 const settingsDrawer = document.getElementById('settingsDrawer');
 document.getElementById('toggleSettings').addEventListener('click', ()=>{ settingsDrawer.classList.toggle('open'); settingsDrawer.setAttribute('aria-hidden', !settingsDrawer.classList.contains('open')); });
 document.getElementById('closeSettings').addEventListener('click', ()=>{ settingsDrawer.classList.remove('open'); settingsDrawer.setAttribute('aria-hidden','true'); });
@@ -460,13 +491,12 @@ document.getElementById('currency').addEventListener('change', (e)=>{ currency =
 document.getElementById('density').addEventListener('change', (e)=>{ document.querySelectorAll('.card .content').forEach(c => c.style.padding = e.target.value === 'compact' ? '8px' : '12px'); });
 document.getElementById('reduceMotion').addEventListener('change', (e)=>{ if(e.target.checked) document.querySelectorAll('.card').forEach(c=> c.style.transition='none'); else document.querySelectorAll('.card').forEach(c=> c.style.transition='transform .28s ease,box-shadow .28s ease'); });
 
-/* ---------- 3D Viewer (Three.js textured box) ---------- */
+/* ---------- 3D viewer (Three.js textured box) ---------- */
 let THREE_APP = { renderer:null, scene:null, camera:null, mesh:null, raf:null, spinning:true };
 function init3D(container, textureUrl){
-  // cleanup
   container.innerHTML = '';
   if(THREE_APP.renderer){
-    try { THREE_APP.renderer.dispose(); } catch(e) {}
+    try{ THREE_APP.renderer.dispose(); }catch(e){}
     cancelAnimationFrame(THREE_APP.raf);
   }
   const scene = new THREE.Scene();
@@ -479,7 +509,7 @@ function init3D(container, textureUrl){
   const dir = new THREE.DirectionalLight(0xffffff, 0.9); dir.position.set(2,2,2); scene.add(dir);
   const geometry = new THREE.BoxGeometry(1.4, 2.0, 0.5);
   const loader = new THREE.TextureLoader();
-  const mat = new THREE.MeshStandardMaterial({ map: loader.load(textureUrl, () => { renderer.render(scene,camera); }) });
+  const mat = new THREE.MeshStandardMaterial({ map: loader.load(textureUrl) });
   const mesh = new THREE.Mesh(geometry, mat);
   scene.add(mesh);
   function animate(){
@@ -492,7 +522,7 @@ function init3D(container, textureUrl){
   window.addEventListener('resize', ()=>{ if(renderer){ renderer.setSize(container.clientWidth, container.clientHeight); camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); }});
 }
 function open3DViewer(p){
-  document.getElementById('viewerTitle').textContent = `${p.name} · ${fmt(getPrice(p), currency)}`;
+  document.getElementById('viewerTitle').textContent = `${p.name} · ${fmt(priceOf(p), currency)}`;
   document.getElementById('viewerModal').classList.add('open'); document.getElementById('viewerModal').setAttribute('aria-hidden','false');
   init3D(document.getElementById('viewer'), p.img);
   document.getElementById('buyLink').href = '#buy-' + p.id;
@@ -500,20 +530,21 @@ function open3DViewer(p){
 document.getElementById('closeViewer').addEventListener('click', ()=>{ document.getElementById('viewerModal').classList.remove('open'); document.getElementById('viewerModal').setAttribute('aria-hidden','true'); if(THREE_APP.raf) cancelAnimationFrame(THREE_APP.raf); if(THREE_APP.renderer) THREE_APP.renderer.dispose(); document.getElementById('viewer').innerHTML = ''; });
 document.getElementById('spinToggle').addEventListener('click', (e)=>{ THREE_APP.spinning = !THREE_APP.spinning; e.target.textContent = THREE_APP.spinning ? 'Pause Spin' : 'Resume Spin'; });
 
-/* ---------- Attach initial behavior ---------- */
+/* ---------- Initialize card handlers (first page already rendered) ---------- */
 attachCardTilt();
 attachCardButtons();
 
-/* ---------- Accessibility & quick keyboard UX ---------- */
+/* ---------- Accessibility / keyboard quick close ---------- */
 document.addEventListener('keydown', (e) => {
   if(e.key === 'Escape'){
     document.querySelectorAll('.modal.open, .settings-drawer.open').forEach(el => { el.classList.remove('open'); el.setAttribute('aria-hidden','true'); });
   }
 });
 
-/* ---------- Small polyfills / finish ---------- */
+/* ---------- Final UI state ---------- */
 updateCartUI();
 
 </script>
+
 </body>
 </html>
