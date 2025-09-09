@@ -1,112 +1,519 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GLAOUR — Stylish Men’s Costumes</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>GLAOUR — Stylish Men's Costumes Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ---------- THEME & LAYOUT ---------- */
+:root{
+  --bg-0:#030305; --bg-1:#08080c; --panel:#0f0f16; --muted:#bfc1c8;
+  --accent1:#ff6b6b; --accent2:#7c5cff; --glass:rgba(255,255,255,.04);
+  --success:#16a34a; --danger:#ef4444;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#eef2f7;
+  background:
+    radial-gradient(800px 420px at 10% 10%, rgba(124,92,255,.06), transparent 20%),
+    linear-gradient(180deg,var(--bg-0), #06060a 60%);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* NAV */
+.header{position:sticky;top:0;z-index:60;background:linear-gradient(180deg, rgba(0,0,0,.6), rgba(0,0,0,.35));backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.03)}
+.header-inner{max-width:1280px;margin:0 auto;display:flex;gap:12px;align-items:center;padding:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800}
+.logo{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent2),var(--accent1));display:grid;place-items:center;font-weight:900;color:#06060a}
+.menu{display:flex;gap:12px}
+.menu a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+.menu a.active,.menu a:hover{background:var(--glass);color:#fff}
+.spacer{flex:1}
+.search input{width:360px;padding:9px 12px;border-radius:10px;background:#0b0b11;border:1px solid rgba(255,255,255,.04);color:inherit}
+
+/* ICONS */
+.icons{display:flex;gap:8px;align-items:center}
+.icon-btn{background:#0c0c12;border:1px solid rgba(255,255,255,.04);padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.count{background:var(--accent1);color:#fff;padding:2px 6px;border-radius:999px;margin-left:6px;font-weight:700; font-size:13px}
+
+/* TOOLBAR */
+.toolbar{max-width:1280px;margin:14px auto;display:flex;justify-content:space-between;gap:12px;padding:0 12px;align-items:center}
+.filters{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.filters select,.filters input[type=range],.filters input[type=text]{background:#0b0b11;border:1px solid rgba(255,255,255,.04);color:var(--muted);padding:8px;border-radius:8px}
+.range{display:flex;align-items:center;gap:8px}
+.chipbar{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.04);padding:8px 12px;border-radius:999px;cursor:pointer}
+
+/* GRID */
+.grid{max-width:1280px;margin:12px auto;padding:0 12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.01),transparent);border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.04);box-shadow:0 10px 30px rgba(0,0,0,.6);display:flex;flex-direction:column;transform-style:preserve-3d;transition:transform .28s ease,box-shadow .28s ease}
+.media{height:320px;background:#0a0a0f;display:grid;place-items:center;position:relative;overflow:hidden}
+.media img{width:110%;height:110%;object-fit:cover;transform:translateZ(40px) scale(1.02);transition:transform .6s}
+.badge{position:absolute;left:12px;top:12px;background:linear-gradient(90deg,var(--accent2),var(--accent1));padding:6px 10px;border-radius:999px;color:#06060a;font-weight:800;font-size:13px}
+.offer{position:absolute;right:-40px;top:12px;transform:rotate(33deg);background:var(--success);color:#fff;padding:6px 48px;font-weight:800;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.content{padding:12px;display:grid;gap:8px}
+.title{font-weight:800}
+.meta{color:var(--muted);font-size:13px}
+.price{font-weight:900}
+.price s{opacity:.55;font-weight:600;font-size:13px;margin-left:8px}
+.actions{display:flex;gap:8px}
+.btn{padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.04);background:#0b0b11;color:var(--muted);cursor:pointer}
+.btn.primary{background:linear-gradient(90deg,var(--accent2),var(--accent1));color:#061018;border:none}
+
+/* SETTINGS DRAWER & MODALS */
+.settings-drawer{position:fixed;right:-360px;top:0;height:100vh;width:360px;background:var(--panel);border-left:1px solid rgba(255,255,255,.04);transition:right .35s;padding:18px;z-index:70}
+.settings-drawer.open{right:0}
+.modal{position:fixed;inset:0;display:none;place-items:center;background:rgba(0,0,0,.6);z-index:90}
+.modal.open{display:grid}
+.modal-card{background:#0e0e14;border-radius:12px;padding:0;border:1px solid rgba(255,255,255,.04);overflow:hidden;width:min(920px,94vw)}
+.modal-card.small{width:520px}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.viewer{height:520px;background:radial-gradient(600px 200px at 50% 0%, rgba(124,92,255,.06), transparent), #08080b}
+.modal-body{padding:12px}
+.modal-actions{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(255,255,255,.04)}
+
+/* FOOTER */
+.footer{margin-top:24px;padding:20px 12px;border-top:1px solid rgba(255,255,255,.03)}
+.foot-inner{max-width:1280px;margin:0 auto;display:flex;gap:20px;align-items:center}
+.muted{color:var(--muted);font-size:13px}
+label{display:flex;flex-direction:column}
+input,select,textarea{padding:8px;background:#0e0e14;border:1px solid rgba(255,255,255,.03);border-radius:8px;color:inherit}
+
+/* RESPONSIVE */
+@media (max-width:920px){ .search input{width:180px} .media{height:260px} }
+@media (max-width:640px){ .menu{display:none} .search input{width:120px} .header-inner{padding:10px} .grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))} }
+</style>
 </head>
 <body>
-  <header class="nav">
-    <div class="nav-inner">
-      <div class="brand"><div class="logo">G</div><span>GLAOUR</span></div>
-      <nav class="menu">
-        <a class="active" href="#">Home</a>
-        <a href="#collections">Collections</a>
-        <a href="#offers">Offers</a>
-        <a href="#about">About</a>
-      </nav>
-      <div class="spacer"></div>
-      <div class="search">
-        <input id="search" placeholder="Search jackets, kurtas, suits, tees..." />
-      </div>
-      <div class="icons">
-        <button id="openCart" class="icon-btn" title="MyCart">Cart <span id="cartCount" class="count">0</span></button>
-        <button id="openContact" class="icon-btn">Contact</button>
-        <button id="openSettings" class="icon-btn">Settings</button>
-      </div>
+
+<!-- HEADER -->
+<header class="header" role="banner">
+  <div class="header-inner">
+    <div class="brand" aria-label="GLAOUR">
+      <div class="logo">G</div>
+      <div style="font-size:18px">GLAOUR</div>
     </div>
-  </header>
-
-  <section class="toolbar">
-    <div class="filters">
-      <select id="category"><option value="">All Categories</option><option>Formal</option><option>Casual</option><option>Ethnic</option><option>Street</option><option>Active</option></select>
-      <select id="size"><option value="">All Sizes</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select>
-      <div class="range"><input type="range" id="priceRange" min="499" max="19999" step="100" value="19999"><span id="priceLabel">₹19,999</span></div>
-      <select id="sort"><option value="pop">Popularity</option><option value="low">Price: Low to High</option><option value="high">Price: High to Low</option><option value="new">Newest</option></select>
-      <label class="deal"><input type="checkbox" id="onlyDeals"> Deals only</label>
+    <nav class="menu" aria-label="Primary">
+      <a href="#" class="active">Home</a>
+      <a href="#collections">Collections</a>
+      <a href="#offers">Offers</a>
+      <a href="#about">About</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="search" role="search">
+      <input id="search" placeholder="Search jackets, kurtas, suits, tees..." />
     </div>
-    <div class="chipbar"><button class="chip">New</button><button class="chip">Bestseller</button><button class="chip">Festive</button><button class="chip">Minimal</button><button class="chip">Premium</button></div>
-  </section>
-
-  <main id="grid" class="grid" aria-live="polite"></main>
-
-  <!-- settings drawer -->
-  <aside id="settingsDrawer" class="settings-drawer">
-    <div class="settings-inner">
-      <h3>Settings</h3>
-      <label>Currency <select id="currency"><option value="INR" selected>INR (₹)</option><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option></select></label>
-      <label><input type="checkbox" id="reduceMotion"> Reduce motion</label>
-      <label>Density <select id="density"><option value="cozy" selected>Cozy</option><option value="compact">Compact</option></select></label>
-      <p class="muted">GLAOUR demo — to convert to a full store, wire APIs for products, auth, and payments.</p>
-      <button id="closeSettings" class="btn secondary">Close</button>
-    </div>
-  </aside>
-
-  <!-- 3D Viewer modal -->
-  <div id="viewerModal" class="modal">
-    <div class="modal-card">
-      <div class="modal-header">
-        <strong id="viewerTitle">3D Preview</strong>
-        <button id="closeViewer" class="icon-btn">✕</button>
-      </div>
-      <div id="viewer" class="viewer"></div>
-      <div class="modal-actions">
-        <button id="spinToggle" class="btn">Pause Spin</button>
-        <a id="buyNow" class="btn primary" href="#">Buy Now</a>
-      </div>
+    <div class="icons" aria-hidden="false">
+      <button id="openCart" class="icon-btn">MyCart <span id="cartCount" class="count">0</span></button>
+      <button id="openContact" class="icon-btn">Contact</button>
+      <button id="toggleSettings" class="icon-btn">Settings</button>
     </div>
   </div>
+</header>
 
-  <!-- cart modal -->
-  <div id="cartModal" class="modal">
-    <div class="modal-card small">
-      <div class="modal-header"><strong>MyCart</strong><button id="closeCart" class="icon-btn">✕</button></div>
-      <div id="cartBody" class="modal-body"></div>
-      <div class="modal-actions"><button id="checkout" class="btn primary">Checkout</button></div>
+<!-- TOOLBAR -->
+<section class="toolbar" aria-label="Filters">
+  <div class="filters">
+    <select id="filterCategory" aria-label="Category filter">
+      <option value="">All Categories</option>
+      <option>Formal</option><option>Casual</option><option>Ethnic</option><option>Street</option><option>Active</option>
+    </select>
+    <select id="filterSize" aria-label="Size filter">
+      <option value="">All Sizes</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option>
+    </select>
+    <div class="range">
+      <input id="priceRange" type="range" min="499" max="19999" step="100" value="19999" aria-label="Price max" />
+      <div id="priceLabel">₹19,999</div>
     </div>
+    <select id="sortBy" aria-label="Sort by">
+      <option value="pop">Popularity</option>
+      <option value="low">Price: Low → High</option>
+      <option value="high">Price: High → Low</option>
+      <option value="new">Newest</option>
+    </select>
+    <label style="display:flex;align-items:center;gap:8px;color:var(--muted)"><input id="onlyDeals" type="checkbox" /> Deals only</label>
   </div>
 
-  <!-- contact modal -->
-  <div id="contactModal" class="modal">
-    <div class="modal-card small">
-      <div class="modal-header"><strong>Contact Us</strong><button id="closeContact" class="icon-btn">✕</button></div>
-      <div class="modal-body">
-        <form id="contactForm">
-          <label>Name<input required id="cname" /></label>
-          <label>Email<input required id="cemail" type="email" /></label>
-          <label>Message<textarea required id="cmessage"></textarea></label>
-          <div style="display:flex;gap:8px;margin-top:10px"><button type="submit" class="btn primary">Send</button><button type="button" id="cancelContact" class="btn">Cancel</button></div>
-        </form>
+  <div class="chipbar" aria-label="Quick filters">
+    <button class="chip" data-chip="new">New</button>
+    <button class="chip" data-chip="bestseller">Bestseller</button>
+    <button class="chip" data-chip="festive">Festive</button>
+    <button class="chip" data-chip="minimal">Minimal</button>
+    <button class="chip" data-chip="premium">Premium</button>
+  </div>
+</section>
+
+<!-- GRID (products injected via JS) -->
+<main id="grid" class="grid" aria-live="polite"></main>
+
+<!-- SETTINGS DRAWER -->
+<aside id="settingsDrawer" class="settings-drawer" role="dialog" aria-hidden="true">
+  <h3>Settings</h3>
+  <label>Currency
+    <select id="currency">
+      <option value="INR" selected>INR (₹)</option>
+      <option value="USD">USD ($)</option>
+      <option value="EUR">EUR (€)</option>
+    </select>
+  </label>
+  <label><input type="checkbox" id="reduceMotion" /> Reduce motion</label>
+  <label>Density
+    <select id="density">
+      <option value="cozy" selected>Cozy</option>
+      <option value="compact">Compact</option>
+    </select>
+  </label>
+  <p class="muted">GLAOUR demo. Connect a backend to convert this into a real store (products, auth, payments).</p>
+  <div style="margin-top:14px"><button id="closeSettings" class="btn">Close</button></div>
+</aside>
+
+<!-- 3D VIEWER MODAL -->
+<div id="viewerModal" class="modal" aria-hidden="true" role="dialog">
+  <div class="modal-card">
+    <div class="modal-header">
+      <strong id="viewerTitle">3D Preview</strong>
+      <button id="closeViewer" class="icon-btn">✕</button>
+    </div>
+    <div id="viewer" class="viewer" aria-live="polite"></div>
+    <div class="modal-actions">
+      <button id="spinToggle" class="btn">Pause Spin</button>
+      <a id="buyLink" class="btn primary" href="#">Buy Now</a>
+    </div>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div id="cartModal" class="modal" aria-hidden="true">
+  <div class="modal-card small">
+    <div class="modal-header">
+      <strong>MyCart</strong>
+      <button id="closeCart" class="icon-btn">✕</button>
+    </div>
+    <div id="cartBody" class="modal-body"></div>
+    <div class="modal-actions">
+      <button id="checkoutBtn" class="btn primary">Checkout</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT MODAL -->
+<div id="contactModal" class="modal" aria-hidden="true">
+  <div class="modal-card small">
+    <div class="modal-header">
+      <strong>Contact Us</strong>
+      <button id="closeContact" class="icon-btn">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="contactForm">
+        <label>Name<input id="cname" required /></label>
+        <label>Email<input id="cemail" type="email" required /></label>
+        <label>Message<textarea id="cmessage" rows="4" required></textarea></label>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button type="submit" class="btn primary">Send</button>
+          <button type="button" id="cancelContact" class="btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer" id="about">
+  <div class="foot-inner">
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo" style="width:36px;height:36px;border-radius:8px">G</div>
+      <div style="font-weight:700">GLAOUR</div>
+    </div>
+    <div style="flex:1" class="muted">Real-business ready UI. Images are demo thumbnails from Unsplash. Replace with your catalog for production.</div>
+  </div>
+</footer>
+
+<!-- Three.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+<script>
+/* ========== APP.JS — All logic in-page ========== */
+
+/* ---------- Demo data generation (1200+) ---------- */
+const PRODUCTS = [];
+const categories = ['Formal','Casual','Ethnic','Street','Active'];
+const sizes = ['XS','S','M','L','XL'];
+const sampleImages = [
+  'https://images.unsplash.com/photo-1520975912778-1fbf8a7b29b3',
+  'https://images.unsplash.com/photo-1503342217505-b0a15cf47945',
+  'https://images.unsplash.com/photo-1545996124-1b7b6b1f0f09',
+  'https://images.unsplash.com/photo-1490111718993-d98654ce6cf7',
+  'https://images.unsplash.com/photo-1541099649105-f69ad21f3246',
+  'https://images.unsplash.com/photo-1600180758895-8f3e8bd2b6c4'
+];
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+for(let i=1;i<=1200;i++){
+  const cat = pick(categories);
+  const size = pick(sizes);
+  const base = rand(499,14999);
+  const deal = Math.random() < 0.45 ? rand(5,40) : 0;
+  const img = pick(sampleImages) + `?q=80&w=1400&auto=format&fit=crop&sig=${i}`;
+  PRODUCTS.push({
+    id: `gla-${i}`,
+    name: `${pick(['Heritage','Neo','Classic','Urban','Prime','Apex'])} ${pick(['Jacket','Kurta','Tuxedo','Tee','Tracksuit','Denim'])}`,
+    category: cat, size, priceINR: base, priceUSD: Math.round(base/82), priceEUR: Math.round(base/88),
+    deal, img, caption: 'Clean tailored design with premium fabric.'
+  });
+}
+
+/* ---------- Utilities ---------- */
+const fmt = (n, cur='INR') => {
+  const opts = { style:'currency', currency: cur };
+  return new Intl.NumberFormat(cur==='INR' ? 'en-IN' : 'en-US', opts).format(n);
+};
+let currency = 'INR';
+function getPrice(p){ if(currency==='USD') return p.priceUSD; if(currency==='EUR') return p.priceEUR; return p.priceINR; }
+
+/* ---------- DOM refs ---------- */
+const grid = document.getElementById('grid');
+const priceRange = document.getElementById('priceRange');
+const priceLabel = document.getElementById('priceLabel');
+const filterCategory = document.getElementById('filterCategory');
+const filterSize = document.getElementById('filterSize');
+const sortBy = document.getElementById('sortBy');
+const onlyDeals = document.getElementById('onlyDeals');
+const searchInput = document.getElementById('search');
+const chips = document.querySelectorAll('.chip');
+const cartCountEl = document.getElementById('cartCount');
+
+/* ---------- Render helpers ---------- */
+function cardHTML(p){
+  const price = getPrice(p);
+  const oldPrice = Math.round(price / (1 - (p.deal||0)/100));
+  return `
+    <article class="card" data-id="${p.id}" data-cat="${p.category}" data-size="${p.size}" data-tags="${p.deal? 'deal':''}">
+      <div class="media" data-tilt>
+        <img src="${p.img}" alt="${p.name}" loading="lazy" />
+        <div class="badge">${p.category}</div>
+        ${p.deal? `<div class="offer">${p.deal}% OFF</div>` : ''}
       </div>
-    </div>
-  </div>
+      <div class="content">
+        <div class="title">${escapeHtml(p.name)}</div>
+        <div class="meta">${escapeHtml(p.caption)}</div>
+        <div class="price">${fmt(price,currency)} <s>${fmt(oldPrice,currency)}</s></div>
+        <div class="actions">
+          <button class="btn view3d">View 3D</button>
+          <button class="btn primary add-cart">Add to Cart</button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-  <footer class="footer">
-    <div class="foot-inner">
-      <div class="brand"><div class="logo">G</div><span>GLAOUR</span></div>
-      <p>Real-business ready UI. Images are demo thumbnails. For production, replace images with your catalog and connect a backend.</p>
-    </div>
-  </footer>
+/* ---------- Incremental render (lazy load) ---------- */
+let page = 0, PAGE = 60;
+function renderNext(list){
+  const start = page*PAGE;
+  const slice = list.slice(start, start+PAGE);
+  if(!slice.length) return;
+  const tmp = document.createElement('div');
+  tmp.innerHTML = slice.map(cardHTML).join('');
+  while(tmp.firstChild) grid.appendChild(tmp.firstChild);
+  attachCardTilt();
+  attachCardButtons();
+  page++;
+}
+function clearAndRender(list){
+  grid.innerHTML = '';
+  page = 0;
+  renderNext(list);
+}
 
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <script src="app.js"></script>
+/* ---------- Initial list (default PRODUCTS) ---------- */
+let activeList = PRODUCTS.slice(); // filtered subset
+clearAndRender(activeList);
+
+/* infinite scroll */
+let loadingMore = false;
+window.addEventListener('scroll', () => {
+  if(loadingMore) return;
+  if(window.innerHeight + window.scrollY > document.body.offsetHeight - 1400 && page * PAGE < activeList.length){
+    loadingMore = true;
+    setTimeout(()=>{ renderNext(activeList); loadingMore = false; }, 350);
+  }
+});
+
+/* ---------- Filters & search ---------- */
+function convertPrice(val){
+  if(currency==='INR') return val;
+  if(currency==='USD') return Math.round(val/82);
+  if(currency==='EUR') return Math.round(val/88);
+}
+function applyFilters(){
+  const cat = filterCategory.value;
+  const size = filterSize.value;
+  const max = +priceRange.value;
+  const text = searchInput.value.trim().toLowerCase();
+  const chipsActive = [...document.querySelectorAll('.chip[aria-pressed="true"]')].map(c=>c.dataset.chip);
+  let list = PRODUCTS.filter(p => getPrice(p) <= convertPrice(max));
+  if(cat) list = list.filter(p => p.category === cat);
+  if(size) list = list.filter(p => p.size === size);
+  if(onlyDeals.checked) list = list.filter(p => p.deal && p.deal > 0);
+  if(chipsActive.length) list = list.filter(p => chipsActive.every(ch => (p.deal && ch==='new') || (ch === 'bestseller' ? p.priceINR % 7 === 0 : true) )); // simple tag emulation
+  if(text) list = list.filter(p => (p.name + ' ' + p.caption).toLowerCase().includes(text));
+  if(sortBy.value === 'low') list.sort((a,b)=>getPrice(a)-getPrice(b));
+  if(sortBy.value === 'high') list.sort((a,b)=>getPrice(b)-getPrice(a));
+  if(sortBy.value === 'new') list = list.slice().reverse();
+  activeList = list;
+  clearAndRender(activeList);
+}
+priceRange.addEventListener('input', ()=>{ priceLabel.textContent = '₹' + (+priceRange.value).toLocaleString('en-IN'); applyFilters(); });
+[filterCategory, filterSize, sortBy, onlyDeals].forEach(el => el.addEventListener('change', applyFilters));
+searchInput.addEventListener('input', ()=>{ setTimeout(applyFilters, 120); });
+chips.forEach(ch => ch.addEventListener('click', () => { const pressed = ch.getAttribute('aria-pressed') === 'true'; ch.setAttribute('aria-pressed', !pressed); applyFilters(); }));
+
+/* ---------- Card tilt & hover motion ---------- */
+function attachCardTilt(){
+  document.querySelectorAll('[data-tilt]').forEach(el => {
+    const img = el.querySelector('img');
+    function mm(e){
+      const r = el.getBoundingClientRect(); const x = (e.clientX - r.left)/r.width; const y = (e.clientY - r.top)/r.height;
+      const rx = (y - .5) * -8; const ry = (x - .5) * 12;
+      el.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+      el.style.transition = 'transform .05s linear';
+      img.style.transform = `translateZ(60px) scale(1.06)`;
+    }
+    function leave(){ el.style.transform = 'none'; img.style.transform = 'translateZ(40px) scale(1.02)'; }
+    el.addEventListener('mousemove', mm);
+    el.addEventListener('mouseleave', leave);
+  });
+}
+
+/* ---------- Cart (localStorage) ---------- */
+const CART_KEY = 'glaour_cart_v1';
+function loadCart(){ return JSON.parse(localStorage.getItem(CART_KEY) || '{}'); }
+function saveCart(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); updateCartUI(); }
+function addToCart(id){ const c = loadCart(); c[id] = (c[id]||0) + 1; saveCart(c); }
+function removeFromCart(id){ const c = loadCart(); delete c[id]; saveCart(c); }
+function updateCartUI(){ const c = loadCart(); const total = Object.values(c).reduce((s,n)=>s+n,0); cartCountEl.textContent = total; }
+updateCartUI();
+
+/* ---------- Attach button handlers for cards ---------- */
+function attachCardButtons(){
+  document.querySelectorAll('.add-cart').forEach(btn => {
+    btn.onclick = (e) => {
+      const id = e.target.closest('.card').dataset.id;
+      addToCart(id);
+      btn.textContent = 'Added';
+      setTimeout(()=>btn.textContent = 'Add to Cart', 700);
+    };
+  });
+  document.querySelectorAll('.view3d').forEach(btn => {
+    btn.onclick = (e) => {
+      const id = e.target.closest('.card').dataset.id;
+      const p = PRODUCTS.find(x => x.id === id);
+      open3DViewer(p);
+    };
+  });
+}
+
+/* ---------- Cart modal rendering ---------- */
+const cartModal = document.getElementById('cartModal');
+document.getElementById('openCart').addEventListener('click', ()=>{ renderCart(); cartModal.classList.add('open'); cartModal.setAttribute('aria-hidden','false'); });
+document.getElementById('closeCart').addEventListener('click', ()=>{ cartModal.classList.remove('open'); cartModal.setAttribute('aria-hidden','true'); });
+function renderCart(){
+  const body = document.getElementById('cartBody');
+  const c = loadCart();
+  if(!Object.keys(c).length){ body.innerHTML = '<p class="muted">Your cart is empty.</p>'; return; }
+  let html = '<div style="display:grid;gap:10px">';
+  let total = 0;
+  for(const id of Object.keys(c)){
+    const qty = c[id];
+    const p = PRODUCTS.find(x => x.id === id);
+    const price = getPrice(p);
+    total += price * qty;
+    html += `<div style="display:flex;gap:10px;align-items:center">
+      <img src="${p.img}" style="width:64px;height:64px;object-fit:cover;border-radius:8px" alt="${p.name}" />
+      <div style="flex:1"><strong>${escapeHtml(p.name)}</strong><div class="muted">${fmt(price,currency)} × ${qty}</div></div>
+      <div><button class="btn remove" data-id="${id}">Remove</button></div>
+    </div>`;
+  }
+  html += `<div style="margin-top:8px;font-weight:800">Total: ${fmt(total,currency)}</div></div>`;
+  body.innerHTML = html;
+  body.querySelectorAll('.remove').forEach(b => b.addEventListener('click', e => { removeFromCart(e.target.dataset.id); renderCart(); }));
+}
+document.getElementById('checkoutBtn').addEventListener('click', ()=>{ alert('Checkout placeholder — integrate payment & backend to complete orders.'); });
+
+/* ---------- Contact modal ---------- */
+const contactModal = document.getElementById('contactModal');
+document.getElementById('openContact').addEventListener('click', ()=>{ contactModal.classList.add('open'); contactModal.setAttribute('aria-hidden','false'); });
+document.getElementById('closeContact').addEventListener('click', ()=>{ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true'); });
+document.getElementById('cancelContact').addEventListener('click', ()=>{ contactModal.classList.remove('open'); });
+document.getElementById('contactForm').addEventListener('submit', (e)=>{ e.preventDefault(); alert('Thanks! Message received (demo).'); contactModal.classList.remove('open'); });
+
+/* ---------- Settings drawer controls ---------- */
+const settingsDrawer = document.getElementById('settingsDrawer');
+document.getElementById('toggleSettings').addEventListener('click', ()=>{ settingsDrawer.classList.toggle('open'); settingsDrawer.setAttribute('aria-hidden', !settingsDrawer.classList.contains('open')); });
+document.getElementById('closeSettings').addEventListener('click', ()=>{ settingsDrawer.classList.remove('open'); settingsDrawer.setAttribute('aria-hidden','true'); });
+document.getElementById('currency').addEventListener('change', (e)=>{ currency = e.target.value; applyFilters(); updateCartUI(); });
+document.getElementById('density').addEventListener('change', (e)=>{ document.querySelectorAll('.card .content').forEach(c => c.style.padding = e.target.value === 'compact' ? '8px' : '12px'); });
+document.getElementById('reduceMotion').addEventListener('change', (e)=>{ if(e.target.checked) document.querySelectorAll('.card').forEach(c=> c.style.transition='none'); else document.querySelectorAll('.card').forEach(c=> c.style.transition='transform .28s ease,box-shadow .28s ease'); });
+
+/* ---------- 3D Viewer (Three.js textured box) ---------- */
+let THREE_APP = { renderer:null, scene:null, camera:null, mesh:null, raf:null, spinning:true };
+function init3D(container, textureUrl){
+  // cleanup
+  container.innerHTML = '';
+  if(THREE_APP.renderer){
+    try { THREE_APP.renderer.dispose(); } catch(e) {}
+    cancelAnimationFrame(THREE_APP.raf);
+  }
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+  camera.position.set(0, 0.6, 2.6);
+  const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer.setSize(container.clientWidth, container.clientHeight);
+  container.appendChild(renderer.domElement);
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x111122, 1.2); scene.add(hemi);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.9); dir.position.set(2,2,2); scene.add(dir);
+  const geometry = new THREE.BoxGeometry(1.4, 2.0, 0.5);
+  const loader = new THREE.TextureLoader();
+  const mat = new THREE.MeshStandardMaterial({ map: loader.load(textureUrl, () => { renderer.render(scene,camera); }) });
+  const mesh = new THREE.Mesh(geometry, mat);
+  scene.add(mesh);
+  function animate(){
+    if(THREE_APP.spinning) mesh.rotation.y += 0.008;
+    renderer.render(scene, camera);
+    THREE_APP.raf = requestAnimationFrame(animate);
+  }
+  animate();
+  THREE_APP = { renderer, scene, camera, mesh, raf: THREE_APP.raf, spinning:true };
+  window.addEventListener('resize', ()=>{ if(renderer){ renderer.setSize(container.clientWidth, container.clientHeight); camera.aspect = container.clientWidth / container.clientHeight; camera.updateProjectionMatrix(); }});
+}
+function open3DViewer(p){
+  document.getElementById('viewerTitle').textContent = `${p.name} · ${fmt(getPrice(p), currency)}`;
+  document.getElementById('viewerModal').classList.add('open'); document.getElementById('viewerModal').setAttribute('aria-hidden','false');
+  init3D(document.getElementById('viewer'), p.img);
+  document.getElementById('buyLink').href = '#buy-' + p.id;
+}
+document.getElementById('closeViewer').addEventListener('click', ()=>{ document.getElementById('viewerModal').classList.remove('open'); document.getElementById('viewerModal').setAttribute('aria-hidden','true'); if(THREE_APP.raf) cancelAnimationFrame(THREE_APP.raf); if(THREE_APP.renderer) THREE_APP.renderer.dispose(); document.getElementById('viewer').innerHTML = ''; });
+document.getElementById('spinToggle').addEventListener('click', (e)=>{ THREE_APP.spinning = !THREE_APP.spinning; e.target.textContent = THREE_APP.spinning ? 'Pause Spin' : 'Resume Spin'; });
+
+/* ---------- Attach initial behavior ---------- */
+attachCardTilt();
+attachCardButtons();
+
+/* ---------- Accessibility & quick keyboard UX ---------- */
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape'){
+    document.querySelectorAll('.modal.open, .settings-drawer.open').forEach(el => { el.classList.remove('open'); el.setAttribute('aria-hidden','true'); });
+  }
+});
+
+/* ---------- Small polyfills / finish ---------- */
+updateCartUI();
+
+</script>
 </body>
 </html>
-
-
-
-
