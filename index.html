@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Camera Design Dashboard</title>
+  <style>
+    /* ========== CSS Styling ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background-color: #f3f4f6;
+      color: #333;
+    }
+
+    header {
+      background-color: #1f2937;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+    }
+
+    .search-bar input {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      width: 200px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .sidebar {
+      background-color: #111827;
+      color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      height: 100%;
+    }
+
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar ul li {
+      padding: 10px 0;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .sidebar ul li:hover {
+      color: #60a5fa;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .card-body {
+      padding: 15px;
+    }
+
+    .card-body h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .card-body p {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    footer {
+      text-align: center;
+      margin: 30px 0 10px;
+      color: #888;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== Header ========== -->
+  <header>
+    <h1>Camera Design Dashboard</h1>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search cameras...">
+    </div>
+  </header>
+
+  <!-- ========== Container ========== -->
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h2>Categories</h2>
+      <ul>
+        <li onclick="filterCategory('All')">All</li>
+        <li onclick="filterCategory('DSLR')">DSLR</li>
+        <li onclick="filterCategory('Mirrorless')">Mirrorless</li>
+        <li onclick="filterCategory('Action')">Action</li>
+        <li onclick="filterCategory('360')">360°</li>
+        <li onclick="filterCategory('Security')">Security</li>
+        <li onclick="filterCategory('Vintage')">Vintage</li>
+      </ul>
+    </aside>
+
+    <!-- Main Cards -->
+    <main class="main" id="cameraGrid">
+      <!-- Cards injected via JS -->
+    </main>
+  </div>
+
+  <footer>&copy; 2025 Camera Dashboard — Showcasing Design & Innovation</footer>
+
+  <!-- ========== JavaScript ========== -->
+  <script>
+    const cameras = [
+      {
+        name: "Canon EOS R5",
+        image: "https://images.unsplash.com/photo-1602524812172-1c6f3e4171b7",
+        design: "DSLR",
+        description: "Flagship full-frame camera with stunning 8K video and advanced autofocus."
+      },
+      {
+        name: "Sony Alpha a7 IV",
+        image: "https://images.unsplash.com/photo-1581291519195-ef11498d1cf9",
+        design: "Mirrorless",
+        description: "A hybrid mirrorless camera ideal for professionals and creatives alike."
+      },
+      {
+        name: "GoPro HERO10 Black",
+        image: "https://images.unsplash.com/photo-1630918926621-23911ccf7f9f",
+        design: "Action",
+        description: "Built for adventures — 5.3K video, waterproof, and hyper smooth stabilization."
+      },
+      {
+        name: "Insta360 ONE RS",
+        image: "https://images.unsplash.com/photo-1633332755192-727a05c4013d",
+        design: "360",
+        description: "Modular 360° camera that captures immersive scenes in 5.7K resolution."
+      },
+      {
+        name: "Arlo Ultra 2",
+        image: "https://images.unsplash.com/photo-1581349487364-5a76d0ecf9ce",
+        design: "Security",
+        description: "Smart wireless security camera with 4K HDR and wide-angle view."
+      },
+      {
+        name: "Leica M-A (Typ 127)",
+        image: "https://images.unsplash.com/photo-1519444793791-6c3c63b1b7a3",
+        design: "Vintage",
+        description: "Classic 35mm film camera with timeless design and manual control."
+      }
+    ];
+
+    const cameraGrid = document.getElementById("cameraGrid");
+    const searchInput = document.getElementById("searchInput");
+
+    function renderCameras(filterText = "", category = "All") {
+      cameraGrid.innerHTML = "";
+      const filtered = cameras.filter(camera => {
+        const matchesText = camera.name.toLowerCase().includes(filterText.toLowerCase());
+        const matchesCategory = category === "All" || camera.design === category;
+        return matchesText && matchesCategory;
+      });
+
+      if (filtered.length === 0) {
+        cameraGrid.innerHTML = `<p style="grid-column: span 2;">No cameras found.</p>`;
+      }
+
+      filtered.forEach(camera => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${camera.image}" alt="${camera.name}">
+          <div class="card-body">
+            <h3>${camera.name}</h3>
+            <p><strong>Design:</strong> ${camera.design}</p>
+            <p>${camera.description}</p>
+          </div>
+        `;
+        cameraGrid.appendChild(card);
+      });
+    }
+
+    // Search functionality
+    searchInput.addEventListener("input", () => {
+      renderCameras(searchInput.value);
+    });
+
+    // Filter by category
+    function filterCategory(category) {
+      renderCameras(searchInput.value, category);
+    }
+
+    // Initial render
+    renderCameras();
+  </script>
+</body>
+</html>
