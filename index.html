@@ -1,21 +1,3 @@
-<!--
-GLAOUR — Men’s Costumes Dashboard
-Three files are included below in one document. Save them as:
-  1) index.html
-  2) styles.css
-  3) app.js
-
-Open index.html in a browser. This is a production-ready single-page frontend demo with:
-- Black gradient theme, menu, optional chip bar, filters, settings drawer
-- 3D viewer (Three.js textured box) for product preview
-- Motion/tilt effects, offer tags, price and MRP, currency toggle
-- Programmatic generation of 1200 demo products with clean Unsplash images
-- Cart (MyCart) with add/remove, persistent in localStorage
-- Contact Us modal (frontend only)
-- Accessible controls and keyboard-friendly interactions
--->
-
-<!-- ========== index.html ========== -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -127,36 +109,4 @@ Open index.html in a browser. This is a production-ready single-page frontend de
 
 
 
-/* ========== styles.css ========== */
-/* Save this as styles.css in same folder as index.html */
-:root{
-  --bg-0:#050507; --bg-1:#0b0b10; --card:#0f0f15; --muted:#bfc1c8; --accent1:#ff5c7c; --accent2:#6d5cff; --glass:rgba(255,255,255,.04);
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#eef0f3;background:radial-gradient(800px 400px at 10% 10%, rgba(109,92,255,.08), transparent), linear-gradient(180deg,var(--bg-0), #08080a 60%);}
-.nav{position:sticky;top:0;z-index:40;background:linear-gradient(180deg,rgba(0,0,0,.6),rgba(0,0,0,.35));backdrop-filter:blur(6px);border-bottom:1px solid rgba(255,255,255,.03)}
-.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:12px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800}
-.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent2),var(--accent1));display:grid;place-items:center;font-weight:900;color:#081018}
-.menu{display:flex;gap:12px}
-.menu a{color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
-.menu a.active, .menu a:hover{background:var(--glass);color:#fff}
-.spacer{flex:1}
-.search input{width:360px;padding:10px 12px;border-radius:10px;background:#0b0b11;border:1px solid rgba(255,255,255,.04);color:inherit}
-.icons{display:flex;gap:8px}
-.icon-btn{background:#0c0c12;border:1px solid rgba(255,255,255,.04);padding:8px 10px;border-radius:10px;color:var(--muted);cursor:pointer}
-.toolbar{max-width:1200px;margin:16px auto;display:flex;align-items:center;justify-content:space-between;padding:0 12px;gap:12px}
-.filters{display:flex;gap:10px;align-items:center}
-.filters select, .filters input[type=range]{background:#0b0b11;border:1px solid rgba(255,255,255,.04);color:var(--muted);padding:8px;border-radius:8px}
-.range{display:flex;align-items:center;gap:8px}
-.chipbar{display:flex;gap:8px}
-.chip{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,.04);padding:8px 12px;border-radius:999px;cursor:pointer}
-.grid{max-width:1200px;margin:12px auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;padding:0 12px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.01),transparent);border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.04);box-shadow:0 10px 30px rgba(0,0,0,.6);display:flex;flex-direction:column;transform-style:preserve-3d}
-.media{height:320px;background:#0a0a0f;display:grid;place-items:center;position:relative;overflow:hidden}
-.media img{width:110%;height:110%;object-fit:cover;transform:translateZ(40px) scale(1.02);transition:transform .6s}
-.badge{position:absolute;left:12px;top:12px;background:linear-gradient(90deg,var(--accent2),var(--accent1));padding:6px 10px;border-radius:999px;color:#06060a;font-weight:800}
-.offer{position:absolute;right: -44px;top:12px;transform:rotate(35deg);background:#10b981;color:#fff;padding:6px 48px;font-weight:800}
-.content{padding:12px;display:grid;gap:8px}
-.title{font-weight:800}
-.meta{color:var(--muted);fo
+
