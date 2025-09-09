@@ -1,251 +1,279 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Camera Design Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SWAG | Men's Fashion Store</title>
   <style>
-    /* ========== CSS Styling ========== */
+    /* --- RESET & GLOBAL --- */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: "Segoe UI", sans-serif;
+      font-family: 'Segoe UI', sans-serif;
     }
 
     body {
-      background-color: #f3f4f6;
-      color: #333;
+      background: #f3f4f6;
+      color: #1f2937;
     }
 
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* --- HEADER --- */
     header {
-      background-color: #1f2937;
-      color: white;
+      background-color: #111827;
+      color: #fff;
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     header h1 {
-      font-size: 1.5rem;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: #3b82f6;
     }
 
     .search-bar input {
       padding: 0.5rem 1rem;
-      border-radius: 6px;
       border: none;
-      outline: none;
-      width: 200px;
+      border-radius: 6px;
+      width: 220px;
     }
 
-    .container {
-      display: grid;
-      grid-template-columns: 220px 1fr;
-      gap: 20px;
-      padding: 20px;
+    /* --- NAVIGATION --- */
+    nav {
+      background-color: #1e293b;
+      padding: 1rem;
     }
 
-    .sidebar {
-      background-color: #111827;
-      color: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      height: 100%;
-    }
-
-    .sidebar h2 {
-      font-size: 18px;
-      margin-bottom: 1rem;
-    }
-
-    .sidebar ul {
+    nav ul {
       list-style: none;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
     }
 
-    .sidebar ul li {
-      padding: 10px 0;
+    nav li {
+      color: #f9fafb;
       cursor: pointer;
       transition: 0.3s;
     }
 
-    .sidebar ul li:hover {
-      color: #60a5fa;
+    nav li:hover {
+      color: #3b82f6;
     }
 
-    .main {
+    /* --- MAIN --- */
+    .container {
+      padding: 2rem;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
+      gap: 2rem;
     }
 
     .card {
-      background-color: white;
+      background: #ffffff;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      position: relative;
+      transition: transform 0.3s ease;
     }
 
     .card:hover {
-      transform: scale(1.03);
+      transform: translateY(-5px);
     }
 
     .card img {
       width: 100%;
-      height: 180px;
+      height: 320px;
       object-fit: cover;
     }
 
     .card-body {
-      padding: 15px;
+      padding: 1rem;
     }
 
     .card-body h3 {
       font-size: 1.1rem;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .card-body p {
       font-size: 0.9rem;
       color: #555;
+      margin-bottom: 6px;
+    }
+
+    .price {
+      font-weight: bold;
+      font-size: 1rem;
+      color: #1e40af;
+    }
+
+    .offer {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background-color: #dc2626;
+      color: white;
+      padding: 4px 10px;
+      font-size: 12px;
+      border-radius: 20px;
     }
 
     footer {
       text-align: center;
-      margin: 30px 0 10px;
-      color: #888;
+      padding: 1rem;
+      background-color: #f1f5f9;
+      color: #555;
       font-size: 14px;
     }
 
-    @media (max-width: 768px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar {
-        display: none;
+    @media(max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 10px;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- ========== Header ========== -->
+  <!-- HEADER -->
   <header>
-    <h1>Camera Design Dashboard</h1>
+    <h1>SWAG</h1>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search cameras...">
+      <input type="text" id="searchInput" placeholder="Search men’s styles...">
     </div>
   </header>
 
-  <!-- ========== Container ========== -->
-  <div class="container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <h2>Categories</h2>
-      <ul>
-        <li onclick="filterCategory('All')">All</li>
-        <li onclick="filterCategory('DSLR')">DSLR</li>
-        <li onclick="filterCategory('Mirrorless')">Mirrorless</li>
-        <li onclick="filterCategory('Action')">Action</li>
-        <li onclick="filterCategory('360')">360°</li>
-        <li onclick="filterCategory('Security')">Security</li>
-        <li onclick="filterCategory('Vintage')">Vintage</li>
-      </ul>
-    </aside>
+  <!-- NAVIGATION -->
+  <nav>
+    <ul>
+      <li onclick="filterCategory('All')">All</li>
+      <li onclick="filterCategory('Casual')">Casual</li>
+      <li onclick="filterCategory('Formal')">Formal</li>
+      <li onclick="filterCategory('Traditional')">Traditional</li>
+      <li onclick="filterCategory('Party')">Party</li>
+    </ul>
+  </nav>
 
-    <!-- Main Cards -->
-    <main class="main" id="cameraGrid">
-      <!-- Cards injected via JS -->
-    </main>
-  </div>
+  <!-- MAIN PRODUCT GRID -->
+  <section class="container" id="productGrid">
+    <!-- Cards will be injected here -->
+  </section>
 
-  <footer>&copy; 2025 Camera Dashboard — Showcasing Design & Innovation</footer>
+  <!-- FOOTER -->
+  <footer>
+    &copy; 2025 SWAG. All Rights Reserved.
+  </footer>
 
-  <!-- ========== JavaScript ========== -->
+  <!-- JAVASCRIPT -->
   <script>
-    const cameras = [
+    const products = [
       {
-        name: "Canon EOS R5",
-        image: "https://images.unsplash.com/photo-1602524812172-1c6f3e4171b7",
-        design: "DSLR",
-        description: "Flagship full-frame camera with stunning 8K video and advanced autofocus."
+        name: "Urban Streetwear Set",
+        image: "https://images.unsplash.com/photo-1618375531915-bd2e3d92d9a3",
+        category: "Casual",
+        design: "Oversized hoodie & joggers for urban swag.",
+        price: "$59.99",
+        offer: "20% OFF"
       },
       {
-        name: "Sony Alpha a7 IV",
-        image: "https://images.unsplash.com/photo-1581291519195-ef11498d1cf9",
-        design: "Mirrorless",
-        description: "A hybrid mirrorless camera ideal for professionals and creatives alike."
+        name: "Slim Black Suit",
+        image: "https://images.unsplash.com/photo-1526178619253-6c4b03c06044",
+        category: "Formal",
+        design: "Elegant tailored fit with matte finish.",
+        price: "$189.99",
+        offer: "Limited Offer"
       },
       {
-        name: "GoPro HERO10 Black",
-        image: "https://images.unsplash.com/photo-1630918926621-23911ccf7f9f",
-        design: "Action",
-        description: "Built for adventures — 5.3K video, waterproof, and hyper smooth stabilization."
+        name: "Classic White Kurta",
+        image: "https://images.unsplash.com/photo-1635685660913-2e841b98548a",
+        category: "Traditional",
+        design: "Pure cotton kurta with fine thread work.",
+        price: "$49.99",
+        offer: "Festival Deal"
       },
       {
-        name: "Insta360 ONE RS",
-        image: "https://images.unsplash.com/photo-1633332755192-727a05c4013d",
-        design: "360",
-        description: "Modular 360° camera that captures immersive scenes in 5.7K resolution."
+        name: "Velvet Blazer",
+        image: "https://images.unsplash.com/photo-1577380096145-c860277c0c5f",
+        category: "Party",
+        design: "Royal blue velvet with satin lapels.",
+        price: "$129.99",
+        offer: "New Arrival"
       },
       {
-        name: "Arlo Ultra 2",
-        image: "https://images.unsplash.com/photo-1581349487364-5a76d0ecf9ce",
-        design: "Security",
-        description: "Smart wireless security camera with 4K HDR and wide-angle view."
+        name: "Printed Casual Shirt",
+        image: "https://images.unsplash.com/photo-1623026325626-5f4e4da3c9fa",
+        category: "Casual",
+        design: "Lightweight printed shirt for weekends.",
+        price: "$34.99",
+        offer: "10% OFF"
       },
       {
-        name: "Leica M-A (Typ 127)",
-        image: "https://images.unsplash.com/photo-1519444793791-6c3c63b1b7a3",
-        design: "Vintage",
-        description: "Classic 35mm film camera with timeless design and manual control."
+        name: "Golden Sherwani Set",
+        image: "https://images.unsplash.com/photo-1583406435994-2f4c62a3f23f",
+        category: "Traditional",
+        design: "Designer sherwani with dupatta & churidar.",
+        price: "$249.99",
+        offer: "Wedding Sale"
       }
     ];
 
-    const cameraGrid = document.getElementById("cameraGrid");
+    const productGrid = document.getElementById("productGrid");
     const searchInput = document.getElementById("searchInput");
+    let currentCategory = "All";
 
-    function renderCameras(filterText = "", category = "All") {
-      cameraGrid.innerHTML = "";
-      const filtered = cameras.filter(camera => {
-        const matchesText = camera.name.toLowerCase().includes(filterText.toLowerCase());
-        const matchesCategory = category === "All" || camera.design === category;
-        return matchesText && matchesCategory;
+    function renderProducts(filter = "") {
+      productGrid.innerHTML = "";
+      const filtered = products.filter(product => {
+        const matchCategory = currentCategory === "All" || product.category === currentCategory;
+        const matchText = product.name.toLowerCase().includes(filter.toLowerCase());
+        return matchCategory && matchText;
       });
 
       if (filtered.length === 0) {
-        cameraGrid.innerHTML = `<p style="grid-column: span 2;">No cameras found.</p>`;
+        productGrid.innerHTML = "<p>No products found.</p>";
+        return;
       }
 
-      filtered.forEach(camera => {
+      filtered.forEach(prod => {
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
-          <img src="${camera.image}" alt="${camera.name}">
+          <img src="${prod.image}" alt="${prod.name}">
           <div class="card-body">
-            <h3>${camera.name}</h3>
-            <p><strong>Design:</strong> ${camera.design}</p>
-            <p>${camera.description}</p>
+            <h3>${prod.name}</h3>
+            <p>${prod.design}</p>
+            <p class="price">${prod.price}</p>
           </div>
+          <div class="offer">${prod.offer}</div>
         `;
-        cameraGrid.appendChild(card);
+        productGrid.appendChild(card);
       });
     }
 
-    // Search functionality
-    searchInput.addEventListener("input", () => {
-      renderCameras(searchInput.value);
-    });
-
-    // Filter by category
     function filterCategory(category) {
-      renderCameras(searchInput.value, category);
+      currentCategory = category;
+      renderProducts(searchInput.value);
     }
 
-    // Initial render
-    renderCameras();
+    searchInput.addEventListener("input", () => {
+      renderProducts(searchInput.value);
+    });
+
+    // Initial Render
+    renderProducts();
   </script>
 </body>
 </html>
